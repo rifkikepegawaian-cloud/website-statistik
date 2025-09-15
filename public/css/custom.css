@@ -1,0 +1,11 @@
+/* Premium-ish styling */
+.gradient-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%); }
+.card-shadow { background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+.card-premium { background: linear-gradient(145deg, #fefefe 0%, #f0f9ff 100%); border: 2px solid transparent; background-clip: padding-box; position: relative; }
+.section-title { font-weight: 700; font-size: 1.5rem; }
+.card-title { font-weight: 600; font-size: 1.1rem; }
+.icon-container { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+.icon-container-orange { background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); }
+.icon-container-green { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+.icon-container-purple { background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); }
+.chart-container { position: relative; height: 300px; }
