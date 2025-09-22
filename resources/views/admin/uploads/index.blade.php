@@ -4,15 +4,16 @@
 
 <div class="flex items-center justify-between mb-4">
   <a href="{{ route('admin.dashboard') }}"
-     class="inline-block px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-900 hover:scale-105 transition-colors text-sm font-semibold shadow outline outline-1 outline-white">
+     class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-900 hover:scale-105 transition text-sm font-semibold shadow">
     &larr; Kembali
   </a>
 
-  {{-- Tombol Tambah Data → arahkan ke halaman create --}}
-  <a href="{{ route('uploads.create') }}"
-     class="inline-block px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors text-sm font-semibold shadow">
-    + Tambah Data
-  </a>
+  @can('uploads.create')
+    <a href="{{ route('admin.uploads.create') }}"
+       class="inline-block px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-sm font-semibold shadow">
+      + Tambah Data
+    </a>
+  @endcan
 </div>
 
 <div class="bg-white rounded-lg shadow-lg p-6 card-shadow">
@@ -39,26 +40,38 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">{{ $u->row_count }}</td>
             <td class="px-6 py-4 whitespace-nowrap space-x-2">
-              <a href="{{ route('uploads.show', $u) }}" class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Lihat</a>
-              <a href="{{ route('uploads.download', $u) }}" class="px-3 py-1 rounded bg-emerald-600 text-white text-sm">Unduh</a>
-              <form action="{{ route('uploads.destroy', $u) }}" method="post" class="inline" onsubmit="return confirm('Hapus data ini?')">
-                @csrf @method('DELETE')
-                <button class="px-3 py-1 rounded bg-red-600 text-white text-sm">Hapus</button>
-              </form>
+              <a href="{{ route('admin.uploads.show', $u) }}"
+                 class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Lihat</a>
 
-              {{-- Tombol Edit (pakai data-* supaya aman) --}}
-              <button type="button"
-                      class="px-3 py-1 rounded bg-yellow-500 text-white text-sm"
-                      data-id="{{ $u->id }}"
-                      data-date="{{ $u->uploaded_at?->format('Y-m-d') }}"
-                      data-name="{{ $u->original_name }}"
-                      onclick="openEditModal(this)">
-                Edit
-              </button>
+              <a href="{{ route('admin.uploads.download', $u) }}"
+                 class="px-3 py-1 rounded bg-emerald-600 text-white text-sm">Unduh</a>
+
+              @can('uploads.update')
+                <button type="button"
+                        class="px-3 py-1 rounded bg-yellow-500 text-white text-sm"
+                        data-id="{{ $u->id }}"
+                        data-date="{{ $u->uploaded_at?->format('Y-m-d') }}"
+                        data-name="{{ $u->original_name }}"
+                        data-update-url="{{ route('admin.uploads.update', $u) }}"
+                        onclick="openEditModal(this)">
+                  Edit
+                </button>
+              @endcan
+
+              @can('uploads.delete')
+                <form action="{{ route('admin.uploads.destroy', $u) }}"
+                      method="post" class="inline"
+                      onsubmit="return confirm('Hapus data ini?')">
+                  @csrf @method('DELETE')
+                  <button class="px-3 py-1 rounded bg-red-600 text-white text-sm">Hapus</button>
+                </form>
+              @endcan
             </td>
           </tr>
         @empty
-          <tr><td class="px-6 py-4" colspan="3">Belum ada data.</td></tr>
+          <tr>
+            <td class="px-6 py-4" colspan="3">Belum ada data.</td>
+          </tr>
         @endforelse
       </tbody>
     </table>
@@ -81,10 +94,7 @@
 
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Nama File</label>
-        <input type="text"
-               id="editFileName"
-               class="border rounded px-3 py-2 w-full bg-gray-100 truncate"
-               readonly>
+        <input type="text" id="editFileName" class="border rounded px-3 py-2 w-full bg-gray-100 truncate" readonly>
       </div>
 
       <div class="flex justify-end">
@@ -98,15 +108,15 @@
 @push('scripts')
 <script>
   function openEditModal(btn) {
-    const id   = btn.dataset.id;
-    const date = btn.dataset.date || '';
-    const name = btn.dataset.name || '';
+    const date  = btn.dataset.date || '';
+    const name  = btn.dataset.name || '';
+    const url   = btn.dataset.updateUrl;
 
     document.getElementById('editUploadedAt').value = date;
     document.getElementById('editFileName').value   = name;
 
-    // set action form ke route update (ubah sesuai prefix jika berbeda)
-    document.getElementById('editForm').action = '/admin/uploads/' + id;
+    // set action form ke route update yang dikirim dari blade (aman & tidak hardcode)
+    document.getElementById('editForm').action = url;
 
     document.getElementById('editModal').classList.remove('hidden');
   }

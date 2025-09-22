@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title','Ubah Password')
 @section('content')
-<a href="{{ route('admin.dashboard') }}" class="inline-block mb-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-900 hover:scale-105 transition-colors text-sm font-semibold shadow outline outline-1 outline-white">
+<a href="{{ route('admin.dashboard') }}"
+    class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-900 hover:scale-105 transition text-sm font-semibold shadow mb-4">
   &larr; Kembali
 </a>
 <div class="bg-white rounded-lg shadow-lg p-6 card-shadow max-w-md mx-auto">
@@ -9,7 +10,7 @@
   @if(session('status'))
     <div class="bg-green-50 text-green-700 p-3 rounded mb-4 text-sm">{{ session('status') }}</div>
   @endif
-  <form method="post" action="{{ route('password.update') }}" class="space-y-4">
+  <form method="post" action="{{ route('admin.password.update') }}" class="space-y-4">
     @csrf
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Password Lama</label>

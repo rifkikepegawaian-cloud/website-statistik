@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
@@ -10,7 +11,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        if (session()->has('admin_id')) {
+        if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
         return view('auth.login');
@@ -23,18 +24,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('username', $request->username)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['login' => 'Username atau password salah.'])->withInput();
+        // login berbasis username (bukan email)
+        $remember = $request->boolean('remember');
+        if (Auth::attempt($request->only('username','password'), $remember)) {
+            $request->session()->regenerate(); // penting supaya sesi baru
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        session(['admin_id' => $user->id, 'admin_username' => $user->username]);
-        return redirect()->route('admin.dashboard');
+        return back()->withErrors(['login' => 'Username atau password salah.'])
+                     ->onlyInput('username');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->forget(['admin_id','admin_username']);
+        Auth::logout();
+        $request->session()->invalidate();   // hapus sesi lama
+        $request->session()->regenerateToken();
         return redirect()->route('login');
     }
 
@@ -47,16 +52,18 @@ class AuthController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
+            'new_password'     => 'required|min:6|confirmed',
         ]);
 
-        $user = User::find(session('admin_id'));
+        $user = Auth::user();
         if (!$user || !Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password lama tidak cocok.']);
         }
 
-        $user->password = Hash::make($request->new_password);
-        $user->save();
+        // Tanpa memanggil ->save(), ini selalu aman:
+        User::whereKey(Auth::id())->update([
+            'password' => Hash::make($request->new_password)
+        ]);
 
         return back()->with('status', 'Password berhasil diperbarui.');
     }

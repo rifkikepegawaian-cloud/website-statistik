@@ -70,15 +70,20 @@
         </div>
         <div class="flex items-center space-x-4">
           <a href="{{ route('home') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Beranda</a>
-          @if(session()->has('admin_id'))
-            <a href="{{ route('admin.dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Admin</a>
-            <form action="{{ route('logout') }}" method="post" class="inline">
+          @auth
+            <a href="{{ auth()->check() ? route('admin.dashboard') : route('login') }}"
+              class="px-3 py-2 text-sm text-white bg-blue-600 rounded">
+              Admin
+            </a>
+            <form action="{{ route('logout') }}" method="POST" class="inline">
               @csrf
-              <button class="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Logout</button>
+              <button type="submit" class="px-3 py-2 text-sm text-white bg-gray-700 rounded">Logout</button>
             </form>
-          @else
-            <a href="{{ route('login') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Admin</a>
-          @endif
+          @endauth
+
+          @guest
+            <a href="{{ route('login') }}" class="px-3 py-2 text-sm text-white bg-blue-600 rounded">Login</a>
+          @endguest
         </div>
       </div>
     </div>

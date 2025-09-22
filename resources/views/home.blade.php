@@ -12,7 +12,7 @@
     <select id="dateSelector" class="border border-gray-300 rounded-md px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
       @foreach($uploads as $u)
         <option value="{{ $u->id }}" {{ $loop->first ? 'selected' : '' }}>
-          {{ $u->uploaded_at?->timezone('Asia/Jakarta')->translatedFormat('d F Y') ?? 'Tanpa tanggal' }} ({{ $u->row_count }} baris)
+          {{ $u->uploaded_at?->timezone('Asia/Jakarta')->translatedFormat('d F Y') ?? 'Tanpa tanggal' }}
         </option>
       @endforeach
     </select>

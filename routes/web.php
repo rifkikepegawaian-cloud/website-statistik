@@ -5,27 +5,50 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UploadController;
 use App\Http\Middleware\AdminAuth;
 
-// PUBLIC
+/*
+|--------------------------------------------------------------------------|
+| Public
+|--------------------------------------------------------------------------|
+*/
 Route::get('/', [UploadController::class, 'home'])->name('home');
 Route::get('/api/uploads/{upload}/stats', [UploadController::class, 'stats'])->name('uploads.stats');
 
-// AUTH
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'doLogin'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+/*
+|--------------------------------------------------------------------------|
+| Auth (login/logout)
+|--------------------------------------------------------------------------|
+| /login hanya untuk guest. Redirect user yang sudah login dilakukan di
+| AuthController@showLogin (Auth::check() -> redirect dashboard).
+*/
+Route::middleware('guest')->group(function () {
+    Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
+    // kalau belum punya RateLimiter bernama 'login', ganti ke throttle:6,1
+    Route::post('/login', [AuthController::class, 'doLogin'])->name('login.post')->middleware('throttle:6,1');
+});
 
-// ADMIN
-Route::middleware([AdminAuth::class])->group(function () {
-    Route::get('/admin', [UploadController::class, 'dashboard'])->name('admin.dashboard');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-    Route::get('/admin/uploads', [UploadController::class, 'index'])->name('uploads.index');
-    Route::get('/admin/uploads/create', [UploadController::class, 'create'])->name('uploads.create');
-    Route::post('/admin/uploads', [UploadController::class, 'store'])->name('uploads.store');
-    Route::get('/admin/uploads/{upload}', [UploadController::class, 'show'])->name('uploads.show');
-    Route::get('/admin/uploads/{upload}/download', [UploadController::class, 'download'])->name('uploads.download');
-    Route::delete('/admin/uploads/{upload}', [UploadController::class, 'destroy'])->name('uploads.destroy');
-    Route::put('/admin/uploads/{upload}', [UploadController::class, 'update'])->name('uploads.update');
+/*
+|--------------------------------------------------------------------------|
+| Admin Area (wajib login)
+|--------------------------------------------------------------------------|
+*/
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('/', [UploadController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/admin/password', [AuthController::class, 'showPassword'])->name('password.show');
-    Route::post('/admin/password', [AuthController::class, 'updatePassword'])->name('password.update');
+    // ---- ADMIN ONLY: create/store/edit/update/destroy ----
+    Route::get('/uploads/create', [UploadController::class, 'create'])->middleware(AdminAuth::class)->name('uploads.create');
+    Route::post('/uploads',        [UploadController::class, 'store'])->middleware(AdminAuth::class)->name('uploads.store');
+    Route::get('/uploads/{upload}/edit', [UploadController::class, 'edit'])->middleware(AdminAuth::class)->name('uploads.edit');
+    Route::put('/uploads/{upload}',      [UploadController::class, 'update'])->middleware(AdminAuth::class)->name('uploads.update');
+    Route::delete('/uploads/{upload}',   [UploadController::class, 'destroy'])->middleware(AdminAuth::class)->name('uploads.destroy');
+
+    // ---- Admin & User: lihat & unduh ----
+    Route::get('/uploads',                    [UploadController::class, 'index'])->name('uploads.index');
+    Route::get('/uploads/{upload}',           [UploadController::class, 'show'])->name('uploads.show');
+    Route::get('/uploads/{upload}/download',  [UploadController::class, 'download'])->name('uploads.download');
+
+    // Ubah password (admin & user boleh)
+    Route::get('/password', [AuthController::class, 'showPassword'])->name('password.show');
+    Route::post('/password', [AuthController::class, 'updatePassword'])->name('password.update');
 });

@@ -4,7 +4,7 @@
 <div class="bg-white rounded-lg shadow-lg p-6 card-shadow">
   <div class="flex justify-between items-center mb-4">
     <h3 class="text-lg font-semibold">Detail Data Pegawai</h3>
-    <a href="{{ route('uploads.index') }}" class="text-blue-600">Kembali</a>
+    <a href="{{ route('admin.uploads.index') }}" class="text-blue-600">Kembali</a>
   </div>
   <p class="text-sm text-gray-600 mb-4">
     File: <strong>{{ $upload->original_name }}</strong> &middot; {{ $upload->row_count }} baris

@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title','Upload Data Pegawai')
 @section('content')
-<a href="{{ route('admin.dashboard') }}" class="inline-block mb-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-900 hover:scale-105 transition-colors text-sm font-semibold shadow outline outline-1 outline-white">
+<a href="{{ route('admin.dashboard') }}"
+    class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-900 hover:scale-105 transition text-sm font-semibold shadow mb-4">
   &larr; Kembali
 </a>
 <div class="bg-white rounded-lg shadow-lg p-6 card-shadow">
@@ -10,7 +11,7 @@
     <p class="text-sm text-gray-600 mb-2">Format Excel minimal memiliki header yang dapat dikenali: <code>JNS KEL</code>, <code>JENIS PEG</code>, <code>GOLONGAN</code>, <code>JABATAN</code>, <code>PENDIDIKAN</code>, <code>STATUS</code>/<code>STATUS BEKERJA</code>, <code>FAKULTAS/SEKOLAH</code>.</p>
   </div>
 
-  <form id="upload_form" method="post" action="{{ route('uploads.store') }}" enctype="multipart/form-data">
+  <form id="upload_form" method="post" action="{{ route('admin.uploads.store') }}" enctype="multipart/form-data">
     @csrf
     <input type="file" id="fileInput" name="file" accept=".xlsx,.xls,.csv" class="hidden">
     <input type="hidden" name="stats_json" id="stats_json">
