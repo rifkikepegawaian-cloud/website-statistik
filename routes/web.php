@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UploadController;
 use App\Http\Middleware\AdminAuth;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------|
@@ -51,4 +52,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Ubah password (admin & user boleh)
     Route::get('/password', [AuthController::class, 'showPassword'])->name('password.show');
     Route::post('/password', [AuthController::class, 'updatePassword'])->name('password.update');
+
+    // routes/web.php (di dalam group prefix('admin')->name('admin.')->middleware('auth'))
+    Route::get('/uploads/{upload}/file', [\App\Http\Controllers\Admin\UploadController::class, 'file'])
+     ->name('uploads.file');
+
+    // User management (admin only)
+    Route::get('/users',        [UserController::class, 'index'])->name('users.index')->middleware('can:users.manage');
+    Route::post('/users',       [UserController::class, 'store'])->name('users.store')->middleware('can:users.manage');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update')->middleware('can:users.manage');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:users.manage'); // opsional
+
 });

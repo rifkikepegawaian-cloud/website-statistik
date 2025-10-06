@@ -63,12 +63,15 @@
 @endsection
 
 @push('scripts')
+<!-- SheetJS (CDN) untuk parse xlsx/xls/csv di browser -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <script>
 (function(){
-  // Data dari PHP (preview termasuk header di index 0)
-  const ALL_ROWS = @json($rows);
-  const HEADER   = ALL_ROWS[0] || [];
-  const ROWS     = ALL_ROWS.slice(1); // tanpa header
+  // Data awal dari PHP (preview termasuk header di index 0)
+  let ALL_ROWS = @json($rows);
+  let HEADER   = ALL_ROWS[0] || [];
+  let ROWS     = ALL_ROWS.slice(1); // tanpa header
 
   // Elemen DOM
   const tbody      = document.getElementById('tableBody');
@@ -138,8 +141,34 @@
     if (currentPage < pages) { currentPage++; render(); }
   });
 
-  // Init
+  // 1) Render awal pakai preview dari DB (cepat)
   render();
+
+  // 2) Ambil file asli -> parse semua baris -> render ulang penuh
+  const fileUrl = @json(route('admin.uploads.file', $upload));
+  fetch(fileUrl, { credentials: 'same-origin' })
+    .then(r => {
+      if (!r.ok) throw new Error('Gagal mengambil file asli');
+      return r.arrayBuffer();
+    })
+    .then(buf => {
+      const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const all = XLSX.utils.sheet_to_json(ws, { header: 1 }) || [];
+
+      if (all.length > 0) {
+        ALL_ROWS = all;
+        HEADER   = ALL_ROWS[0] || [];
+        ROWS     = ALL_ROWS.slice(1);
+        filtered = ROWS.slice();
+        currentPage = 1;
+        render(); // ← sekarang tabel menampilkan SEMUA baris
+      }
+    })
+    .catch(err => {
+      console.warn('Gagal memuat penuh, gunakan preview dari DB.', err);
+    });
 })();
 </script>
 @endpush
+

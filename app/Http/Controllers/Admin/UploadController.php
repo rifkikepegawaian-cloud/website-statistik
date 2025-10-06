@@ -171,4 +171,22 @@ class UploadController extends Controller
 
         return redirect()->route('admin.uploads.index')->with('status', 'Tanggal upload berhasil diubah!');
     }
+
+    public function file(\App\Models\Upload $upload)
+    {
+        $this->authorize('uploads.view');
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+        if (!$disk->exists($upload->file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        // biar bisa di-fetch sebagai blob
+        $fullPath = $disk->path($upload->file_path);
+        return response()->download($fullPath, $upload->original_name, [
+            'Content-Type' => 'application/octet-stream',
+            // 'Content-Disposition' => 'inline; filename="'.$upload->original_name.'"' // opsional
+        ]);
+    }
+
 }

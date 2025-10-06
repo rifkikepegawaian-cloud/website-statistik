@@ -293,6 +293,7 @@ window.ChartUI = (function(){
       }
     }}};
   }
+  
   window.renderAllCharts = function(data){
     destroyAll();
     Chart.register(ChartDataLabels);
@@ -893,95 +894,106 @@ window.ChartUI = (function(){
 
 
 
-    const fak = document.getElementById('fakultasChart');
-    if (fak) {
-      // ambil data
-      const labelsAll = Object.keys(data.fakultasData || {});
-      const dosAll    = labelsAll.map(f => (data.fakultasData?.[f]?.dosen)  || 0);
-      const tenAll    = labelsAll.map(f => (data.fakultasData?.[f]?.tendik) || 0);
+  const fak = document.getElementById('fakultasChart');
+  if (fak) {
+    // ambil data
+    const labelsAll = Object.keys(data.fakultasData || {});
+    const dosAll    = labelsAll.map(f => (data.fakultasData?.[f]?.dosen)  || 0);
+    const tenAll    = labelsAll.map(f => (data.fakultasData?.[f]?.tendik) || 0);
 
-      // (opsional) sembunyikan kategori yang totalnya 0
-      const rows = labelsAll.map((label, i) => ({ label, d: dosAll[i], t: tenAll[i] }))
+    // sembunyikan kategori total 0 (opsional)
+    const rows   = labelsAll.map((label, i) => ({ label, d: dosAll[i], t: tenAll[i] }))
                             .filter(r => (r.d + r.t) > 0);
-      const labels = rows.map(r => r.label);
-      const dosen  = rows.map(r => r.d);
-      const tendik = rows.map(r => r.t);
+    const labels = rows.map(r => r.label);
+    const dosen  = rows.map(r => r.d);
+    const tendik = rows.map(r => r.t);
 
-      // (opsional) buat bisa scroll horizontal kalau label banyak
-      const perCategory = 80;                       // px ruang tiap kategori
-      const minWidth    = 1000;
-      const canvasW     = Math.max(minWidth, labels.length * perCategory);
-      const canvasH     = 420;
-      const wrap        = fak.parentElement;
-      wrap.style.overflowX = 'auto';
-      wrap.style.overflowY = 'hidden';
-      wrap.style.height    = canvasH + 'px';
-      fak.style.width  = canvasW + 'px';
-      fak.style.height = canvasH + 'px';
-      fak.width  = canvasW;
-      fak.height = canvasH;
+    // === layout scroll X + bar tebal fix ===
+    const BAR_PX  = 18;   // lebar batang per dataset (px)
+    const SLOT_PX = 30;   // lebar slot per kategori (px) -> pengatur jarak antar kategori
+    const MIN_W   = 900;  // min canvas width supaya enak di desktop
+    const H_PX    = 420;  // tinggi canvas
+    const canvasW = Math.max(MIN_W, labels.length * SLOT_PX);
 
-      charts.fak = new Chart(fak, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Dosen',
-              data: dosen,
-              backgroundColor: '#1e3a8a',
-              stack: 'pegawai',                  // ← STACKED
-              categoryPercentage: 0.65,          // ← jarak antar bar (semakin kecil = semakin renggang)
-              barPercentage: 0.9,
-              borderRadius: 6 // biar puncak rapi saat jadi segmen atas
-            },
-            {
-              label: 'Tendik',
-              data: tendik,
-              backgroundColor: '#3b82f6',
-              stack: 'pegawai',                  // ← STACKED
-              categoryPercentage: 0.65,
-              barPercentage: 0.9,
-              borderRadius: { topLeft: 6, topRight: 6 } // biar puncak rapi saat jadi segmen atas
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              stacked: true,
-              ticks: { autoSkip: false, maxRotation: 60, minRotation: 45, padding: 4 }
-            },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-              grace: '18%',                      // headroom supaya label total tidak kepotong
-              ticks: { padding: 6 }
-            }
+    const wrap = fak.parentElement;
+    wrap.style.overflowX = 'auto';
+    wrap.style.overflowY = 'hidden';
+    wrap.style.height    = H_PX + 'px';
+
+    // set ukuran canvas (non-responsive agar scroll stabil)
+    fak.style.width  = canvasW + 'px';
+    fak.style.height = H_PX + 'px';
+    fak.width  = canvasW;
+    fak.height = H_PX;
+
+    // destroy dulu kalau sudah ada
+    if (charts.fak) charts.fak.destroy();
+
+    charts.fak = new Chart(fak, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Dosen',
+            data: dosen,
+            backgroundColor: '#1e3a8a',
+            stack: 'pegawai',
+            barThickness: BAR_PX,
+            maxBarThickness: BAR_PX,
+            borderRadius: 6,
+            borderSkipped: false
           },
-          plugins: {
-            legend: { position: 'top' },
-            datalabels: {
-              // tampilkan 1 angka total di puncak bar (hanya pada dataset paling atas)
-              display: (ctx) => ctx.datasetIndex === ctx.chart.data.datasets.length - 1,
-              formatter: (v, ctx) => {
-                const i = ctx.dataIndex;
-                const sum = ctx.chart.data.datasets.reduce((a, ds) => a + (+ds.data[i] || 0), 0);
-                return sum > 0 ? sum : '';
-              },
-              color: 'black',
-              font: { weight: 'bold', size: 12 },
-              anchor: 'end',
-              align: 'top',
-              offset: 6,
-              clip: false
-            }
+          {
+            label: 'Tendik',
+            data: tendik,
+            backgroundColor: '#3b82f6',
+            stack: 'pegawai',
+            barThickness: BAR_PX,
+            maxBarThickness: BAR_PX,
+            borderRadius: { topLeft: 6, topRight: 6 },
+            borderSkipped: false
+          }
+        ]
+      },
+      options: {
+        // penting: non-responsive supaya lebar canvas di atas tidak diubah Chart.js
+        responsive: false,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            stacked: true,
+            ticks: { autoSkip: false, maxRotation: 60, minRotation: 40, padding: 4 },
+            grid: { drawOnChartArea: false }
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            grace: '18%',
+            ticks: { padding: 6 }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          datalabels: {
+            // hanya tampilkan total di dataset paling atas
+            display: (ctx) => ctx.datasetIndex === ctx.chart.data.datasets.length - 1,
+            formatter: (v, ctx) => {
+              const i = ctx.dataIndex;
+              const sum = ctx.chart.data.datasets.reduce((a, ds) => a + (+ds.data[i] || 0), 0);
+              return sum > 0 ? sum : '';
+            },
+            color: 'black',
+            font: { weight: 'bold', size: 12 },
+            anchor: 'end',
+            align: 'top',
+            offset: 6,
+            clip: false
           }
         }
-      });
-    }
+      }
+    });
+  }
     // // setelah semua charts dibuat:
     ChartUI.attachAllChartToolbars(true);
   };

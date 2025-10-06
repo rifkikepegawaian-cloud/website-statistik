@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +29,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('uploads.create', fn(User $u) => $u->role === 'admin');
         Gate::define('uploads.update', fn(User $u) => $u->role === 'admin');
         Gate::define('uploads.delete', fn(User $u) => $u->role === 'admin');
+        Carbon::setLocale('id'); // untuk diffForHumans(), translatedFormat(), dll
     }
 }
