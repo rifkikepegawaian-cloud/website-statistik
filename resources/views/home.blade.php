@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title','Statistik Pegawai')
+@section('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian Universitas Diponegoro. Menyajikan informasi dan grafik analitik Dosen serta Tenaga Kependidikan berdasarkan unit kerja, fakultas, jabatan, jenjang pendidikan, dan golongan.')
 
 @section('content')
 <div class="mb-8 text-center">

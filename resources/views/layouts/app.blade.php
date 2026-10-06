@@ -4,13 +4,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>@yield('title','Dashboard SDM UNDIP')</title>
+  <title>@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP</title>
 
-  {{-- Site Icon / Favicon (logo UNDIP) --}}
-  <link rel="icon" type="image/png"
-        href="{{ asset('images/logo-undip.png') }}?v={{ @filemtime(public_path('images/logo-undip.png')) }}">
-  <link rel="apple-touch-icon"
-        href="{{ asset('images/logo-undip.png') }}?v={{ @filemtime(public_path('images/logo-undip.png')) }}">
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
+  <meta name="description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta name="keywords" content="Statistik Pegawai, SDM UNDIP, Kepegawaian UNDIP, Universitas Diponegoro, Dosen UNDIP, Tendik UNDIP, Dashboard SDM UNDIP">
+  <meta name="author" content="Direktorat Sumber Daya Manusia Universitas Diponegoro">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ url()->current() }}">
+
+  <!-- Google Site Name & Branding Identification -->
+  <meta name="application-name" content="Dashboard SDM UNDIP">
+  <meta name="apple-mobile-web-app-title" content="Dashboard SDM UNDIP">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Dashboard SDM UNDIP">
+  <meta property="og:url" content="{{ url()->current() }}">
+  <meta property="og:title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
+  <meta property="og:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta property="og:image" content="{{ asset('images/logo-undip.png') }}">
+  <meta property="og:image:alt" content="Logo Universitas Diponegoro">
+  <meta property="og:locale" content="id_ID">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
+  <meta name="twitter:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta name="twitter:image" content="{{ asset('images/logo-undip.png') }}">
+
+  <!-- Favicons (Google Search & Mobile compliant) -->
+  <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v={{ @filemtime(public_path('favicon.ico')) }}">
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v={{ @filemtime(public_path('favicon-48x48.png')) }}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v={{ @filemtime(public_path('favicon-96x96.png')) }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v={{ @filemtime(public_path('favicon-192x192.png')) }}">
+  <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('apple-touch-icon.png') }}?v={{ @filemtime(public_path('apple-touch-icon.png')) }}">
+
+  <!-- Structured Data: Google Search Site Name & EducationalOrganization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "{{ url('/') }}/#website",
+        "url": "{{ url('/') }}",
+        "name": "Dashboard SDM UNDIP",
+        "alternateName": [
+          "Statistik SDM UNDIP",
+          "SDM UNDIP",
+          "Statistik Kepegawaian UNDIP",
+          "Portal Statistik UNDIP"
+        ],
+        "description": "Portal visualisasi data dan statistik kepegawaian Dosen dan Tenaga Kependidikan Universitas Diponegoro",
+        "inLanguage": "id-ID"
+      },
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://www.undip.ac.id/#organization",
+        "name": "Universitas Diponegoro",
+        "alternateName": "UNDIP",
+        "url": "https://www.undip.ac.id",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{ asset('images/logo-undip.png') }}"
+        },
+        "department": {
+          "@type": "Organization",
+          "name": "Direktorat Sumber Daya Manusia Universitas Diponegoro",
+          "alternateName": "Direktorat SDM UNDIP",
+          "url": "{{ url('/') }}"
+        }
+      }
+    ]
+  }
+  </script>
 
   <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
