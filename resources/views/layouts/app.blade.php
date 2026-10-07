@@ -8,9 +8,9 @@
 
   <!-- Primary Meta Tags -->
   <meta name="title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
-  <meta name="description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta name="description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro.')">
   <meta name="keywords" content="Statistik Pegawai, SDM UNDIP, Kepegawaian UNDIP, Universitas Diponegoro, Dosen UNDIP, Tendik UNDIP, Dashboard SDM UNDIP">
-  <meta name="author" content="Direktorat Sumber Daya Manusia Universitas Diponegoro">
+  <meta name="author" content="Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{ url()->current() }}">
 
@@ -23,7 +23,7 @@
   <meta property="og:site_name" content="Dashboard SDM UNDIP">
   <meta property="og:url" content="{{ url()->current() }}">
   <meta property="og:title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
-  <meta property="og:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta property="og:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro.')">
   <meta property="og:image" content="{{ asset('images/logo-undip.png') }}">
   <meta property="og:image:alt" content="Logo Universitas Diponegoro">
   <meta property="og:locale" content="id_ID">
@@ -31,7 +31,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="@hasSection('title')@yield('title') - @endif Dashboard SDM UNDIP">
-  <meta name="twitter:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Sumber Daya Manusia Universitas Diponegoro.')">
+  <meta name="twitter:description" content="@yield('meta_description', 'Portal resmi visualisasi data dan statistik kepegawaian (Dosen dan Tenaga Kependidikan) Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro.')">
   <meta name="twitter:image" content="{{ asset('images/logo-undip.png') }}">
 
   <!-- Favicons (Google Search & Mobile compliant) -->
@@ -72,8 +72,8 @@
         ],
         'department' => [
           '@type' => 'Organization',
-          'name' => 'Direktorat Sumber Daya Manusia Universitas Diponegoro',
-          'alternateName' => 'Direktorat SDM UNDIP',
+          'name' => 'Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro',
+          'alternateName' => ['Direktorat OSDM UNDIP', 'Direktorat SDM UNDIP'],
           'url' => url('/')
         ]
       ]
@@ -255,7 +255,7 @@
 
     {{-- FOOTER --}}
     <footer class="py-6 text-center text-blue-900">
-      &copy; {{ now()->year }} Direktorat Sumber Daya Manusia Universitas Diponegoro
+      &copy; {{ now()->year }} Direktorat Organisasi dan Sumber Daya Manusia Universitas Diponegoro
     </footer>
   </div>
 

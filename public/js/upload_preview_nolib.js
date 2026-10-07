@@ -29,13 +29,16 @@
     if(rows.length < 2) return {};
     const headers = (rows[0]||[]).map(v => (v||'').toString());
 
-    const idxGender   = headerIndex(headers, ['jns kel','jenis kel','gender','jns_kel']);
-    const idxGolongan = headerIndex(headers, ['golongan']);
-    const idxJabatan  = headerIndex(headers, ['jabatan']);
-    const idxPend     = headerIndex(headers, ['pendidikan']);
-    const idxStatus   = headerIndex(headers, ['status kepegawaian','status bekerja','status']);
-    const idxJenis    = headerIndex(headers, ['jenis peg','jenis pegawai']);
-    const idxFak      = headerIndex(headers, ['fakultas','sekolah','unit es ii']);
+    const idxGender       = headerIndex(headers, ['jns kel','jenis kel','gender','jns_kel']);
+    const idxGolongan     = headerIndex(headers, ['golongan']);
+    const idxJabatan      = headerIndex(headers, ['jabatan']);
+    const idxPend         = headerIndex(headers, ['pendidikan']);
+    const idxStatusKerja  = headerIndex(headers, ['status bekerja','status kerja','status keaktifan','keaktifan']);
+    const idxStatusPeg    = headerIndex(headers, ['status kepegawaian','status pegawai']);
+    const idxStatusAny    = headerIndex(headers, ['status']);
+    const idxStatus       = idxStatusPeg !== -1 ? idxStatusPeg : idxStatusAny;
+    const idxJenis        = headerIndex(headers, ['jenis peg','jenis pegawai']);
+    const idxFak          = headerIndex(headers, ['fakultas','sekolah','unit es ii']);
 
     const agg = {
       jenisData:        { dosen:0, tendik:0 },
@@ -64,9 +67,24 @@
       obj[key] = (obj[key]||0)+1;
     }
 
+    function isNonAktif(str){
+      if(!str) return false;
+      const s = String(str).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      return s === 'nonaktif' || s === 'tidakaktif';
+    }
+
     for(let r=1;r<rows.length;r++){
       const row = rows[r]||[];
       const val = (i)=> i>=0 ? String(row[i]||'').trim() : '';
+
+      // Abaikan pegawai jika berstatus Non Aktif
+      const statusKerja = val(idxStatusKerja);
+      const statusPeg   = val(idxStatusPeg);
+      const statusAny   = val(idxStatusAny);
+
+      if (isNonAktif(statusKerja) || (idxStatusKerja === -1 && isNonAktif(statusAny)) || isNonAktif(statusPeg)) {
+        continue; // Pegawai Non Aktif tidak dihitung dalam perhitungan jumlah pegawai
+      }
 
       const gender = val(idxGender).toUpperCase();
       const gol    = val(idxGolongan);
@@ -191,13 +209,14 @@
           data = XLSX.utils.sheet_to_json(ws, { header:1 });
         }
 
-        const stats      = computeStats(data);                    // dihitung dari SELURUH data
-        const totalRows  = Math.max(data.length - 1, 0);
-        const previewLim = Math.min(data.length, PREVIEW_LIMIT + 1); // header + 100 baris
-        const previewRows= data.slice(0, previewLim);
+        const stats        = computeStats(data);                    // dihitung dari SELURUH data (Non Aktif dilewati)
+        const activeCount  = (stats.jenisData?.dosen || 0) + (stats.jenisData?.tendik || 0);
+        const totalRows    = activeCount > 0 ? activeCount : Math.max(data.length - 1, 0);
+        const previewLim   = Math.min(data.length, PREVIEW_LIMIT + 1); // header + 100 baris
+        const previewRows  = data.slice(0, previewLim);
 
         hiddenStats.value   = JSON.stringify(stats);
-        hiddenRows.value    = String(totalRows);                 // total asli (tanpa header)
+        hiddenRows.value    = String(totalRows);                 // total pegawai aktif yang dihitung
         hiddenPreview.value = JSON.stringify(previewRows);       // header + 100 baris saja
 
         showPreview(data);                                       // UI tampil 100 baris
