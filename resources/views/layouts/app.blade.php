@@ -43,42 +43,42 @@
 
   <!-- Structured Data: Google Search Site Name & EducationalOrganization -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": "{{ url('/') }}/#website",
-        "url": "{{ url('/') }}",
-        "name": "Dashboard SDM UNDIP",
-        "alternateName": [
-          "Statistik SDM UNDIP",
-          "SDM UNDIP",
-          "Statistik Kepegawaian UNDIP",
-          "Portal Statistik UNDIP"
+  {!! json_encode([
+    '@context' => 'https://schema.org',
+    '@graph' => [
+      [
+        '@type' => 'WebSite',
+        '@id' => url('/') . '/#website',
+        'url' => url('/'),
+        'name' => 'Dashboard SDM UNDIP',
+        'alternateName' => [
+          'Statistik SDM UNDIP',
+          'SDM UNDIP',
+          'Statistik Kepegawaian UNDIP',
+          'Portal Statistik UNDIP'
         ],
-        "description": "Portal visualisasi data dan statistik kepegawaian Dosen dan Tenaga Kependidikan Universitas Diponegoro",
-        "inLanguage": "id-ID"
-      },
-      {
-        "@type": "EducationalOrganization",
-        "@id": "https://www.undip.ac.id/#organization",
-        "name": "Universitas Diponegoro",
-        "alternateName": "UNDIP",
-        "url": "https://www.undip.ac.id",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "{{ asset('images/logo-undip.png') }}"
-        },
-        "department": {
-          "@type": "Organization",
-          "name": "Direktorat Sumber Daya Manusia Universitas Diponegoro",
-          "alternateName": "Direktorat SDM UNDIP",
-          "url": "{{ url('/') }}"
-        }
-      }
+        'description' => 'Portal visualisasi data dan statistik kepegawaian Dosen dan Tenaga Kependidikan Universitas Diponegoro',
+        'inLanguage' => 'id-ID'
+      ],
+      [
+        '@type' => 'EducationalOrganization',
+        '@id' => 'https://www.undip.ac.id/#organization',
+        'name' => 'Universitas Diponegoro',
+        'alternateName' => 'UNDIP',
+        'url' => 'https://www.undip.ac.id',
+        'logo' => [
+          '@type' => 'ImageObject',
+          'url' => asset('images/logo-undip.png')
+        ],
+        'department' => [
+          '@type' => 'Organization',
+          'name' => 'Direktorat Sumber Daya Manusia Universitas Diponegoro',
+          'alternateName' => 'Direktorat SDM UNDIP',
+          'url' => url('/')
+        ]
+      ]
     ]
-  }
+  ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
   </script>
 
   <!-- Tailwind CSS (CDN) -->
